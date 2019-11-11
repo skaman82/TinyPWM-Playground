@@ -69,20 +69,20 @@ void loop() {
 
     if (dir == 0) {
       hue++;
-      delay(4);
+      delay(5);
     }
 
     else if (dir == 1) {
       hue--;
-      delay(4);
+      delay(5);
     }
 
-    if (hue == 200) {
+    if (hue == 150) {
       analogWrite(GATE, 255);
       delay(50);
     }
 
-    if (hue == 200) {
+    if (hue == 150) {
       dir = 1;
     }
 
