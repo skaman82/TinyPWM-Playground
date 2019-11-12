@@ -6,20 +6,16 @@
 #include <Adafruit_NeoPixel.h>
 #include <EEPROM.h>
 
-#define modeADDR        1  // EEPROM Adress for mode setting
-#define colorADDR       2  // EEPROM Adress for color setting
-#define mapADDR         3  // EEPROM Adress for color setting
-
+#define modeADDR        1   // EEPROM Adress for mode setting
+#define colorADDR       2   // EEPROM Adress for color setting
+#define mapADDR         3   // EEPROM Adress for map setting
 #define NUMPIXELS       16
-
-#define Button          5 // 5nano | 0at85 
-#define GATE_PIN        13 // 13nano | 3at85
-#define WSLED_PIN       3 // 3nano | 4at85
-
+#define Button          5   // 5nano | 0at85 
+#define GATE_PIN        13  // 13nano | 3at85
+#define WSLED_PIN       3   // 3nano | 4at85
 #define longpresstime   1000  // in ms
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, WSLED_PIN, NEO_GRB + NEO_KHZ800);
-
 
 int timer = 0;
 int timer2 = 0;
@@ -37,7 +33,7 @@ int i_butt = 0;
 int mode_setting = 0;
 int old_mode_setting = 0;
 int color_setting = 0;
-int old_color_setting = 0;
+int old_color_setting = 0;    
 int map_setting = 0;
 int old_map_setting = 0;
 int pushedFlag = 0;
