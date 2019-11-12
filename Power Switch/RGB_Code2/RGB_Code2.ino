@@ -646,14 +646,14 @@ void loop() {
           previousMillis = currentMillis;
           p++;
 
-          if (p == 7) { //
+          if (p == 6) { //
             p = 0;
           }
 
 
           j--;
 
-          if (j == 8) { //
+          if (j == 9) { //
             j = 15;
           }
 
