@@ -11,9 +11,9 @@
 #define colorADDR       2   // EEPROM Adress for color setting
 #define mapADDR         3   // EEPROM Adress for map setting
 #define NUMPIXELS       16
-#define Button          5   // 5nano | 0at85 
-#define GATE_PIN        13  // 13nano | 3at85
-#define WSLED_PIN       3   // 3nano | 4at85
+#define Button          0   // 5nano | 0at85 | 3 LEDmini
+#define GATE_PIN        3   // 13nano | 3at85 | 0 LEDmini
+#define WSLED_PIN       4   // 3nano | 4at85
 #define longpresstime   1000  // in ms
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, WSLED_PIN, NEO_GRB + NEO_KHZ800);
