@@ -1,42 +1,40 @@
 // ATtinyCore 85 Optoboot bootloader
-//akt code
+//RGB Code for the "LIGHTS CTRL RGB" PWM power switch
+//Code by Albert Kravcov
 
 //#define F_CPU 8000000
 
-#include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h>  
 #include <EEPROM.h>
 
-#define modeADDR        1  // EEPROM Adress for mode setting
-#define colorADDR       2  // EEPROM Adress for color setting
-#define mapADDR         3  // EEPROM Adress for color setting
-
+#define modeADDR        1   // EEPROM Adress for mode setting
+#define colorADDR       2   // EEPROM Adress for color setting
+#define mapADDR         3   // EEPROM Adress for map setting
 #define NUMPIXELS       16
-
-#define Button          5 // 5nano | 0at85 
-#define GATE_PIN        13 // 13nano | 3at85
-#define WSLED_PIN       3 // 3nano | 4at85
-
+#define Button          5   // 5nano | 0at85 
+#define GATE_PIN        13  // 13nano | 3at85
+#define WSLED_PIN       3   // 3nano | 4at85
 #define longpresstime   1000  // in ms
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, WSLED_PIN, NEO_GRB + NEO_KHZ800);
 
-
 int timer = 0;
 int timer2 = 0;
 int p = 0, dir = 1; // Position, direction of "eye";
-
+byte j = 15;
 int looptime = 0;
 int buttontimer = 1001;
-int right = 0;
-int left = 0;
+byte right = 0;
+byte left = 0;
 unsigned long previousMillis = 0;
 
 int pressedbut = 0;
 int i_butt = 0;
+
 int mode_setting = 0;
 int old_mode_setting = 0;
 int color_setting = 0;
-int old_color_setting = 0;
+int old_color_setting = 0;    
 int map_setting = 0;
 int old_map_setting = 0;
 int pushedFlag = 0;
@@ -84,14 +82,8 @@ void setup() {
   }
 
 
-
   pixels.clear();
 
-  //Serial.begin(9600);
-
-  //map_setting = 2; //just for debudding
-  //mode_setting = 1;
-  //color_setting = 1;
 }
 
 
@@ -140,9 +132,7 @@ void loop() {
     buttoncheck();
     colorchange();
 
-
     looptime++;
-
 
 
     //Saving the last state if no button is pressed for a hile
@@ -197,9 +187,11 @@ void loop() {
 
 
 
+
         if (mode_setting == 0) {
           pixels.show();
         }
+
 
         //WIPE ANIMATION MAP0  --------------------------------------------------
 
@@ -248,7 +240,7 @@ void loop() {
             }
 
             pixels.show();
-            //animation test END
+            //animation  END
 
           }
         }
@@ -256,78 +248,78 @@ void loop() {
 
         else if (mode_setting == 2) {
 
-            //LARSON ANIMATION MAP1 (first 8 pixels)  --------------------------------------------------
+          //LARSON ANIMATION MAP0 (first 8 pixels)  --------------------------------------------------
 
 
-            for (int i = 0; i < 16; i++) {
-              pixels.setPixelColor(i, 0, 0, 0); // red
-            }
-
-            unsigned long currentMillis = millis();
-
-
-            if (currentMillis - previousMillis >= 30) {
-              previousMillis = currentMillis;
-              p += dir;
-              if (p < 0) {
-                p = 1;
-                dir = -dir;
-              }
-              else if (p >= 16) {
-                p = 14;
-                dir = -dir;
-              }
-
-              if (color_setting == 0) {
-                  pixels.setPixelColor(p - 2, 5, 0, 0); // Dark red
-                  pixels.setPixelColor(p - 1, 25, 0, 0); // Medium red
-                  pixels.setPixelColor(p, 255, 0, 0); // red
-                  pixels.setPixelColor(p + 1, 25, 0, 0); // Medium red
-                  pixels.setPixelColor(p + 2, 5, 0, 0); // Dark red
-              }
-              else if (color_setting == 1) {
-                pixels.setPixelColor(p - 2, 0, 5, 0); // 
-                pixels.setPixelColor(p - 1, 0, 25, 0); // 
-                pixels.setPixelColor(p, 0, 255, 0); //            
-                pixels.setPixelColor(p + 1, 0, 25, 0); // 
-                pixels.setPixelColor(p + 2, 0, 5, 0); // 
-              }
-              else if (color_setting == 2) {
-                pixels.setPixelColor(p - 2, 0, 0, 5); // off
-                pixels.setPixelColor(p - 1, 0, 0, 25); // off
-                pixels.setPixelColor(p, 0, 0, 255); // off
-                pixels.setPixelColor(p + 1, 0, 0, 25); // off
-                pixels.setPixelColor(p + 2, 0, 0, 5); // off
-              }
-              else if (color_setting == 3) {
-                pixels.setPixelColor(p - 2, 0, 5, 5); // off
-                pixels.setPixelColor(p - 1, 0, 25, 25); // off
-                pixels.setPixelColor(p, 0, 255, 255); // off
-                pixels.setPixelColor(p + 1, 0, 25, 25); // off
-                pixels.setPixelColor(p + 2, 0, 5, 5); // off
-              }
-              else if (color_setting == 4) {
-                pixels.setPixelColor(p - 2, 5, 5, 0); // off
-                pixels.setPixelColor(p - 1, 25, 25, 0); // off
-                pixels.setPixelColor(p, 255, 255, 0); // off
-                pixels.setPixelColor(p + 1, 25, 25, 0); // off
-                pixels.setPixelColor(p + 2, 5, 5, 0); // off
-              }
-              else if (color_setting == 5) {
-                pixels.setPixelColor(p - 2, 5, 0, 5); // off
-                pixels.setPixelColor(p - 1, 25, 0, 25); // off
-                pixels.setPixelColor(p, 255, 0, 255); // off
-                pixels.setPixelColor(p + 1, 25, 0, 25); // off
-                pixels.setPixelColor(p + 2, 5, 0, 5); // off
-              }
-
-              pixels.show();
-              //animation END
-
-            }
+          for (int i = 0; i < 16; i++) {
+            pixels.setPixelColor(i, 0, 0, 0); // red
           }
 
-          
+          unsigned long currentMillis = millis();
+
+
+          if (currentMillis - previousMillis >= 50) {
+            previousMillis = currentMillis;
+            p += dir;
+            if (p < 0) {
+              p = 1;
+              dir = -dir;
+            }
+            else if (p >= 16) {
+              p = 14;
+              dir = -dir;
+            }
+
+            if (color_setting == 0) {
+              pixels.setPixelColor(p - 2, 5, 0, 0); // Dark red
+              pixels.setPixelColor(p - 1, 25, 0, 0); // Medium red
+              pixels.setPixelColor(p, 255, 0, 0); // red
+              pixels.setPixelColor(p + 1, 25, 0, 0); // Medium red
+              pixels.setPixelColor(p + 2, 5, 0, 0); // Dark red
+            }
+            else if (color_setting == 1) {
+              pixels.setPixelColor(p - 2, 0, 5, 0); //
+              pixels.setPixelColor(p - 1, 0, 25, 0); //
+              pixels.setPixelColor(p, 0, 255, 0); //
+              pixels.setPixelColor(p + 1, 0, 25, 0); //
+              pixels.setPixelColor(p + 2, 0, 5, 0); //
+            }
+            else if (color_setting == 2) {
+              pixels.setPixelColor(p - 2, 0, 0, 5); // off
+              pixels.setPixelColor(p - 1, 0, 0, 25); // off
+              pixels.setPixelColor(p, 0, 0, 255); // off
+              pixels.setPixelColor(p + 1, 0, 0, 25); // off
+              pixels.setPixelColor(p + 2, 0, 0, 5); // off
+            }
+            else if (color_setting == 3) {
+              pixels.setPixelColor(p - 2, 0, 5, 5); // off
+              pixels.setPixelColor(p - 1, 0, 25, 25); // off
+              pixels.setPixelColor(p, 0, 255, 255); // off
+              pixels.setPixelColor(p + 1, 0, 25, 25); // off
+              pixels.setPixelColor(p + 2, 0, 5, 5); // off
+            }
+            else if (color_setting == 4) {
+              pixels.setPixelColor(p - 2, 5, 5, 0); // off
+              pixels.setPixelColor(p - 1, 25, 25, 0); // off
+              pixels.setPixelColor(p, 255, 255, 0); // off
+              pixels.setPixelColor(p + 1, 25, 25, 0); // off
+              pixels.setPixelColor(p + 2, 5, 5, 0); // off
+            }
+            else if (color_setting == 5) {
+              pixels.setPixelColor(p - 2, 5, 0, 5); // off
+              pixels.setPixelColor(p - 1, 25, 0, 25); // off
+              pixels.setPixelColor(p, 255, 0, 255); // off
+              pixels.setPixelColor(p + 1, 25, 0, 25); // off
+              pixels.setPixelColor(p + 2, 5, 0, 5); // off
+            }
+
+            pixels.show();
+            //animation END
+
+          }
+        }
+
+
         else {
           pixels.show();
         }
@@ -444,49 +436,63 @@ void loop() {
             unsigned long currentMillis = millis();
 
 
-            if (currentMillis - previousMillis >= 50) {
+            if (currentMillis - previousMillis >= 80) {
               previousMillis = currentMillis;
-              //p++;
+              
+
               p += dir;
               if (p < 0) {
                 p = 1;
                 dir = -dir;
               }
-              else if (p >= 7) {
-                p = 6;
+              else if (p >= 6) {
+                p = 5;
                 dir = -dir;
               }
 
+
               if (color_setting == 0) {
-                pixels.setPixelColor(p - 1, 0x100000); // Dark red
+                pixels.setPixelColor(p - 2, 5, 0, 0); // Dark red
+                pixels.setPixelColor(p - 1, 20, 0, 0); // Dark red
                 pixels.setPixelColor(p    , 255, 0, 0); // Center pixel is brightest
-                pixels.setPixelColor(p + 1, 0x100000); // Dark red
+                pixels.setPixelColor(p + 1, 20, 0, 0); // Dark red
+                pixels.setPixelColor(p + 2, 5, 0, 0); // Dark red
               }
-              else if (color_setting == 1) {
+              else if (color_setting == 1) {          
+                pixels.setPixelColor(p - 2, 0, 5, 0); // off
+                pixels.setPixelColor(p - 1, 0, 20, 0); // off
                 pixels.setPixelColor(p, 0, 255, 0); // off
-                pixels.setPixelColor(p - 1, 0, 10, 0); // off
-                pixels.setPixelColor(p + 1, 0, 10, 0); // off
+                pixels.setPixelColor(p + 1, 0, 20, 0); // off
+                pixels.setPixelColor(p + 2, 0, 5, 0); // off
               }
 
               else if (color_setting == 2) {
+                pixels.setPixelColor(p - 2, 0, 0, 5); // off
+                pixels.setPixelColor(p - 1, 0, 0, 20); // off
                 pixels.setPixelColor(p, 0, 0, 255); // off
-                pixels.setPixelColor(p - 1, 0, 0, 10); // off
-                pixels.setPixelColor(p + 1, 0, 0, 10); // off
+                pixels.setPixelColor(p + 1, 0, 0, 20); // off
+                pixels.setPixelColor(p + 2, 0, 0, 5); // off
               }
               else if (color_setting == 3) {
+                pixels.setPixelColor(p - 2, 0, 5, 5); // off
+                pixels.setPixelColor(p - 1, 0, 20, 20); // off
                 pixels.setPixelColor(p, 0, 255, 255); // off
-                pixels.setPixelColor(p - 1, 0, 10, 10); // off
-                pixels.setPixelColor(p + 1, 0, 10, 10); // off
+                pixels.setPixelColor(p + 1, 0, 20, 20); // off
+                pixels.setPixelColor(p + 2, 0, 5, 5); // off
               }
               else if (color_setting == 4) {
+                pixels.setPixelColor(p - 2, 5, 5, 0); // off
+                pixels.setPixelColor(p - 1, 20, 20, 0); // off
                 pixels.setPixelColor(p, 255, 255, 0); // off
-                pixels.setPixelColor(p - 1, 10, 10, 0); // off
-                pixels.setPixelColor(p + 1, 10, 10, 0); // off
+                pixels.setPixelColor(p + 1, 20, 20, 0); // off
+                pixels.setPixelColor(p + 2, 5, 5, 0); // off
               }
               else if (color_setting == 5) {
+                pixels.setPixelColor(p - 2, 5, 0, 5); // off
+                pixels.setPixelColor(p - 1, 20, 0, 20); // off
                 pixels.setPixelColor(p, 255, 0, 255); // off
-                pixels.setPixelColor(p - 1, 10, 0, 10); // off
-                pixels.setPixelColor(p + 1, 10, 0, 10); // off
+                pixels.setPixelColor(p + 1, 20, 0, 20); // off
+                pixels.setPixelColor(p + 2, 5, 0, 5); // off
               }
 
               pixels.show();
@@ -496,12 +502,11 @@ void loop() {
           }
 
           else {
-            pixels.show();
+            //pixels.show();
           }
         }
 
         if (timer <= 2000) {
-
 
           pixels.setPixelColor(8, 0, 0, 0); // color set.
           pixels.setPixelColor(9, 0, 0, 0); // color set.
@@ -600,8 +605,10 @@ void loop() {
           pixels.setPixelColor(i, 255, 0, 0); // red
         }
         else if (color_setting == 4) {
+          pixels.setPixelColor(i, 255, 0, 200); // pink
         }
         else if (color_setting == 5) {
+          pixels.setPixelColor(i, 255, 255, 255); // white
         }
       }
       for (int i = 8; i < 16; i++) {
@@ -618,8 +625,10 @@ void loop() {
           pixels.setPixelColor(i, 0, 0, 255); // blue
         }
         else if (color_setting == 4) {
+          pixels.setPixelColor(i, 0, 255, 10); // light green
         }
         else if (color_setting == 5) {
+          pixels.setPixelColor(i, 255, 255, 255); // white
         }
       }
 
@@ -630,8 +639,137 @@ void loop() {
         pixels.show();
       }
 
+
+
       else if (mode_setting == 1) {
-        //BLINK ANIMATION  --------------------------------------------------
+
+        //WIPE ANIMATION MAP2 (8 & 8 pixels)  --------------------------------------------------
+
+        for (int i = 0; i < 16; i++) {
+          pixels.setPixelColor(i, 0, 0, 0); // off first half
+        }
+
+        unsigned long currentMillis = millis();
+
+
+        if (currentMillis - previousMillis >= 80) {
+          previousMillis = currentMillis;
+          p++;
+
+          if (p == 6) { //
+            p = 0;
+          }
+
+
+          j--;
+
+          if (j == 9) { //
+            j = 15;
+          }
+
+
+          if (color_setting == 0) {
+            //red
+            pixels.setPixelColor(p - 2, 10, 0, 0); // off
+            pixels.setPixelColor(p - 1, 50, 0, 0); // off
+            pixels.setPixelColor(p, 255, 0, 0); // off
+            pixels.setPixelColor(p + 1, 50, 0, 0); // off
+            pixels.setPixelColor(p + 2, 10, 0, 0); // off
+
+            //green
+            pixels.setPixelColor(j - 2, 0, 10, 0); // off
+            pixels.setPixelColor(j - 1, 0, 50, 0); // off
+            pixels.setPixelColor(j, 0, 255, 0); // off
+            pixels.setPixelColor(j + 1, 0, 50, 0); // off
+            pixels.setPixelColor(j + 2, 0, 10, 0); // off
+          }
+
+          else if (color_setting == 1) {
+            //yellow
+            pixels.setPixelColor(p - 2, 10, 10, 0); // off
+            pixels.setPixelColor(p - 1, 50, 50, 0); // off
+            pixels.setPixelColor(p, 255, 255, 0); // off
+            pixels.setPixelColor(p + 1, 50, 50, 0); // off
+            pixels.setPixelColor(p + 2, 10, 10, 0); // off
+
+            //light blue
+            pixels.setPixelColor(j - 2, 0, 10, 10); // off
+            pixels.setPixelColor(j - 1, 0, 50, 50); // off
+            pixels.setPixelColor(j, 0, 255, 255); // off
+            pixels.setPixelColor(j + 1, 0, 50, 50); // off
+            pixels.setPixelColor(j + 2, 0, 10, 10); // off
+          }
+
+          else if (color_setting == 2) {
+            //orange
+            pixels.setPixelColor(p - 2, 10, 5, 0); // off
+            pixels.setPixelColor(p - 1, 50, 20, 0); // off
+            pixels.setPixelColor(p, 255, 100, 0); // off
+            pixels.setPixelColor(p + 1, 50, 20, 0); // off
+            pixels.setPixelColor(p + 2, 10, 5, 0); // off
+
+            //purple
+            pixels.setPixelColor(j - 2, 5, 0, 10); // off
+            pixels.setPixelColor(j - 1, 20, 0, 50); // off
+            pixels.setPixelColor(j, 100, 0, 255); // off
+            pixels.setPixelColor(j + 1, 20, 0, 50); // off
+            pixels.setPixelColor(j + 2, 5, 0, 10); // off
+          }
+          else if (color_setting == 3) {
+            //red
+            pixels.setPixelColor(p - 2, 10, 0, 0); // off
+            pixels.setPixelColor(p - 1, 50, 0, 0); // off
+            pixels.setPixelColor(p, 255, 0, 0); // off
+            pixels.setPixelColor(p + 1, 50, 0, 0); // off
+            pixels.setPixelColor(p + 2, 10, 0, 0); // off
+
+            //blue
+            pixels.setPixelColor(j - 2, 0, 0, 10); // off
+            pixels.setPixelColor(j - 1, 0, 0, 50); // off
+            pixels.setPixelColor(j, 0, 0, 255); // off
+            pixels.setPixelColor(j + 1, 0, 0, 50); // off
+            pixels.setPixelColor(j + 2, 0, 0, 10); // off
+          }
+          else if (color_setting == 4) {
+            //pink
+            pixels.setPixelColor(p - 2, 10, 0, 7); // off
+            pixels.setPixelColor(p - 1, 50, 0, 40); // off
+            pixels.setPixelColor(p, 255, 0, 200); // off
+            pixels.setPixelColor(p + 1, 50, 0, 40); // off
+            pixels.setPixelColor(p + 2, 10, 0, 7); // off
+
+            //light green
+            pixels.setPixelColor(j - 2, 0, 10, 3); // off
+            pixels.setPixelColor(j - 1, 0, 50, 10); // off
+            pixels.setPixelColor(j, 0, 255, 20); // off
+            pixels.setPixelColor(j + 1, 0, 50, 10); // off
+            pixels.setPixelColor(j + 2, 0, 10, 3); // off
+          }
+          else if (color_setting == 5) {
+            //white
+            pixels.setPixelColor(p - 2, 10, 10, 10); // off
+            pixels.setPixelColor(p - 1, 50, 50, 50); // off
+            pixels.setPixelColor(p, 255, 255, 255); // off
+            pixels.setPixelColor(p + 1, 50, 50, 50); // off
+            pixels.setPixelColor(p + 2, 10, 10, 10); // off
+
+            //white
+            pixels.setPixelColor(j - 2, 10, 10, 10); // off
+            pixels.setPixelColor(j - 1, 50, 50, 50); // off
+            pixels.setPixelColor(j, 255, 255, 255); // off
+            pixels.setPixelColor(j + 1, 50, 50, 50); // off
+            pixels.setPixelColor(j + 2, 10, 10, 10); // off
+          }
+
+          pixels.show();
+          //animation test END
+
+        }
+      }
+
+
+      else if (mode_setting == 2) {
+        //BLINK ANIMATION MAP2  --------------------------------------------------
 
         if (timer < 1260) {
           timer++;
@@ -641,6 +779,7 @@ void loop() {
         if (timer < 60) {
           for (int i = 8; i < 16; i++) {
             pixels.setPixelColor(i, 0, 0, 0); // off first half
+            
           }
           for (int i = 0; i < 8; i++) {
             if (color_setting == 0) {
@@ -656,8 +795,10 @@ void loop() {
               pixels.setPixelColor(i, 255, 0, 0); // red
             }
             else if (color_setting == 4) {
+              pixels.setPixelColor(i, 255, 0, 200); // pink
             }
             else if (color_setting == 5) {
+              pixels.setPixelColor(i, 255, 255, 255); // white
             }
           }
           pixels.show();
@@ -671,6 +812,7 @@ void loop() {
             pixels.setPixelColor(i, 0, 0, 0); // off last half
           }
           pixels.show();
+          
         }
 
         if ((timer > 240) && (timer < 300)) {
@@ -691,13 +833,18 @@ void loop() {
               pixels.setPixelColor(i, 255, 0, 0); // red
             }
             else if (color_setting == 4) {
+              pixels.setPixelColor(i, 0, 255, 10); // light green
             }
             else if (color_setting == 5) {
+              pixels.setPixelColor(i, 255, 255, 255); // white
             }
           }
           pixels.show();
+          
         }
 
+        
+        
         if ((timer > 300) && (timer < 480)) {
           for (int i = 8; i < 16; i++) {
             pixels.setPixelColor(i, 0, 0, 0); // off first half
@@ -724,8 +871,10 @@ void loop() {
               pixels.setPixelColor(i, 0, 0, 255); // blue
             }
             else if (color_setting == 4) {
+              pixels.setPixelColor(i, 255, 0, 200); // pink
             }
             else if (color_setting == 5) {
+              pixels.setPixelColor(i, 255, 255, 255); // white
             }
           }
           for (int i = 0; i < 8; i++) {
@@ -758,8 +907,10 @@ void loop() {
               pixels.setPixelColor(i, 0, 0, 255); // blue
             }
             else if (color_setting == 4) {
+              pixels.setPixelColor(i, 0, 255, 10); // light green
             }
             else if (color_setting == 5) {
+              pixels.setPixelColor(i, 255, 255, 255); // white
             }
           }
           for (int i = 0; i < 8; i++) {
@@ -775,13 +926,12 @@ void loop() {
             pixels.setPixelColor(i, 0, 0, 0); // on last half
           }
           pixels.show();
+          delay(250);
           timer = 0;
         }
 
 
       }
-
-
 
     }
 
@@ -829,7 +979,7 @@ void configuration() {
   buttoncheck();
 
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 3; i++) {
     pixels.setPixelColor(i, 255, 255, 255); // white
   }
 
@@ -848,30 +998,23 @@ void configuration() {
     pixels.setPixelColor(2, 255, 0, 0); // red
   }
 
-  if (map_setting == 3) {
-    pixels.setPixelColor(0, 255, 0, 0); // red
-    pixels.setPixelColor(1, 255, 0, 0); // red
-    pixels.setPixelColor(2, 255, 0, 0); // red
-    pixels.setPixelColor(3, 255, 0, 0); // red
-  }
-
+ 
 
   if (pressedbut == 1) {
 
-    if (map_setting < 3) {
+    if (map_setting < 2) {
       map_setting += 1;
       delay(5);
       buttontimer = 0;
     }
 
-    else if (map_setting == 3) {
+    else if (map_setting == 2) {
       map_setting = 0;
       delay(5);
       buttontimer = 0;
     }
 
   }
-
 
 
 
@@ -885,13 +1028,13 @@ void configuration() {
     if (map_setting != old_map_setting) {
       //save setting if it is changed
       EEPROM.write(mapADDR, map_setting);
+      
       //Serial.println("Mapping saved!");
       //Serial.println(map_setting);
 
       pixels.setPixelColor(0, 0, 255, 0); // green
       pixels.setPixelColor(1, 0, 255, 0); // green
       pixels.setPixelColor(2, 0, 255, 0); // green
-      pixels.setPixelColor(3, 0, 255, 0); // green
 
       pixels.show();
       delay(1000);
