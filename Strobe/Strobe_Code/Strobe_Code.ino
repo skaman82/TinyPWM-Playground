@@ -41,7 +41,7 @@ void loop() {
 
   }
 
-  else if (configFlag == 1) { //do mixed flash pattern
+  else if (configFlag == 1) { //do rampup flash pattern
 
     if (hue < 50) {
       hue++;
@@ -97,7 +97,7 @@ void loop() {
   }
 
   else if (configFlag == 3) { // do constant on
-    analogWrite(GATE, 255);
+    analogWrite(GATE, 155);
 
   }
 
