@@ -1,21 +1,21 @@
 // DIY ATTINY85 Hardware Package: https://github.com/sleemanj/optiboot/blob/master/dists/README.md#attiny
 // No Bootloader, no tone support - but millis
 
-//RGB Code for the "LIGHTS CTRL RGB" PWM power switch
+//RGB Code for the "CTRL RGB mini"
 //Code by Albert Kravcov
 
 //#define F_CPU 8000000
 
-#include <Adafruit_NeoPixel.h>  
+#include <Adafruit_NeoPixel.h>
 #include <EEPROM.h>
 
 #define modeADDR        1   // EEPROM Adress for mode setting
 #define colorADDR       2   // EEPROM Adress for color setting
 #define mapADDR         3   // EEPROM Adress for map setting
 #define NUMPIXELS       16
-#define Button          0   // 5nano | 0at85 | 3 LEDmini
-#define GATE_PIN        3   // 13nano | 3at85 | 0 LEDmini
-#define WSLED_PIN       4   // 3nano | 4at85
+#define Button          3   // 5nano | 0at85 | 3 LEDmini
+#define WSLED_PIN       4   // 3nano | 4at85 & mini
+#define PWM_PIN         2   // 2all (only mini)
 
 #define longpresstime   1000  // in ms
 
@@ -37,10 +37,12 @@ byte i_butt = 0;
 byte mode_setting = 0;
 byte old_mode_setting = 0;
 byte color_setting = 0;
-byte old_color_setting = 0;    
+byte old_color_setting = 0;
 byte map_setting = 0;
 byte old_map_setting = 0;
 byte pushedFlag = 0;
+
+int pwm_value;
 
 void setup() {
 
@@ -62,19 +64,16 @@ void setup() {
 
   map_setting = EEPROM.read(mapADDR);
 
-  if (map_setting >= 3) {
+  if (map_setting >= 4) {
     map_setting = 0;
   }
   old_map_setting = map_setting;
 
 
-  pinMode(GATE_PIN, INPUT); //GATE might not be used
   pinMode(Button, INPUT_PULLUP); //Button
-  
- //digitalWrite(GATE_PIN, LOW);
+  pinMode(PWM_PIN, INPUT); //pwm
 
   pixels.begin(); // This initializes the NeoPixel library.
-
 
 
   if (digitalRead(Button) == LOW) { //decect if button was pressed on startup
@@ -84,9 +83,7 @@ void setup() {
     pushedFlag = 0;
   }
 
-
   pixels.clear();
-
 
 }
 
@@ -379,9 +376,7 @@ void loop() {
 
             //WIPE ANIMATION MAP1 (first 8 pixels)  --------------------------------------------------
 
-
             unsigned long currentMillis = millis();
-
 
             if (currentMillis - previousMillis >= 50) {
               previousMillis = currentMillis;
@@ -432,17 +427,15 @@ void loop() {
 
             //LARSON ANIMATION MAP1 (first 8 pixels)  --------------------------------------------------
 
-
             for (int i = 0; i < 8; i++) {
               pixels.setPixelColor(i, 0, 0, 0); // red
             }
 
             unsigned long currentMillis = millis();
 
-
             if (currentMillis - previousMillis >= 80) {
               previousMillis = currentMillis;
-              
+
 
               p += dir;
               if (p < 0) {
@@ -462,7 +455,7 @@ void loop() {
                 pixels.setPixelColor(p + 1, 20, 0, 0); // Dark red
                 pixels.setPixelColor(p + 2, 5, 0, 0); // Dark red
               }
-              else if (color_setting == 1) {          
+              else if (color_setting == 1) {
                 pixels.setPixelColor(p - 2, 0, 5, 0); // off
                 pixels.setPixelColor(p - 1, 0, 20, 0); // off
                 pixels.setPixelColor(p, 0, 255, 0); // off
@@ -778,12 +771,11 @@ void loop() {
         if (timer < 1260) {
           timer++;
         }
-        //Serial.println(timer);
 
         if (timer < 60) {
           for (int i = 8; i < 16; i++) {
             pixels.setPixelColor(i, 0, 0, 0); // off first half
-            
+
           }
           for (int i = 0; i < 8; i++) {
             if (color_setting == 0) {
@@ -816,7 +808,7 @@ void loop() {
             pixels.setPixelColor(i, 0, 0, 0); // off last half
           }
           pixels.show();
-          
+
         }
 
         if ((timer > 240) && (timer < 300)) {
@@ -844,11 +836,11 @@ void loop() {
             }
           }
           pixels.show();
-          
+
         }
 
-        
-        
+
+
         if ((timer > 300) && (timer < 480)) {
           for (int i = 8; i < 16; i++) {
             pixels.setPixelColor(i, 0, 0, 0); // off first half
@@ -933,15 +925,32 @@ void loop() {
           delay(250);
           timer = 0;
         }
-
-
       }
-
     }
 
+    if (map_setting == 3) {
+
+      uint16_t pwm_value = _readPWM();
+
+      uint16_t color_calc = pwm_value - 2000; //converts pwm to 0-1000 range
+
+      if (color_calc < 0) {
+        color_calc = 0;
+      }
+      if (color_calc > 1000) {
+        color_calc = 1000;
+      }
+
+      byte color_calc_result = color_calc >> 2; //bitshift 10 to 8 bits
+      //color_calc_result = color_calc_result, 0;
 
 
-
+      for (int i = 0; i < 16; i++) {
+        pixels.setPixelColor(i, Wheel(color_calc_result));
+      }
+      pixels.show();
+      delay(10);
+    }
   }
 }
 
@@ -953,8 +962,6 @@ void loop() {
 
 void colorchange() {
 
-
-
   if (pressedbut == 1) {
 
     if (color_setting < 4) {
@@ -963,7 +970,6 @@ void colorchange() {
     else if (color_setting == 4) {
       color_setting = 0;
     }
-
   }
 
   if (pressedbut == 2) {
@@ -973,19 +979,16 @@ void colorchange() {
     else if (mode_setting == 2) {
       mode_setting = 0;
     }
-
-
   }
 }
 
 
 void configuration() {
-  digitalWrite(GATE_PIN, HIGH);
 
   buttoncheck();
 
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 4; i++) {
     pixels.setPixelColor(i, 255, 255, 255); // white
   }
 
@@ -1003,18 +1006,23 @@ void configuration() {
     pixels.setPixelColor(1, 255, 0, 0); // red
     pixels.setPixelColor(2, 255, 0, 0); // red
   }
+  else if (map_setting == 3) {
+    pixels.setPixelColor(0, 255, 0, 0); // red
+    pixels.setPixelColor(1, 255, 0, 0); // red
+    pixels.setPixelColor(2, 255, 0, 0); // red
+    pixels.setPixelColor(3, 255, 0, 0); // red
+  }
 
- 
 
   if (pressedbut == 1) {
 
-    if (map_setting < 2) {
+    if (map_setting < 3) {
       map_setting += 1;
       delay(5);
       buttontimer = 0;
     }
 
-    else if (map_setting == 2) {
+    else if (map_setting == 3) {
       map_setting = 0;
       delay(5);
       buttontimer = 0;
@@ -1034,13 +1042,14 @@ void configuration() {
     if (map_setting != old_map_setting) {
       //save setting if it is changed
       EEPROM.write(mapADDR, map_setting);
-      
+
       //Serial.println("Mapping saved!");
       //Serial.println(map_setting);
 
       pixels.setPixelColor(0, 0, 255, 0); // green
       pixels.setPixelColor(1, 0, 255, 0); // green
       pixels.setPixelColor(2, 0, 255, 0); // green
+      pixels.setPixelColor(3, 0, 255, 0); // green
 
       pixels.show();
       delay(1000);
@@ -1052,4 +1061,32 @@ void configuration() {
 
 
   pixels.show();
+}
+
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85) {
+    return pixels.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170) {
+    WheelPos -= 85;
+    return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+
+}
+
+uint16_t _readPWM() {
+  pwm_value = pulseIn(PWM_PIN, HIGH);
+
+  volatile uint16_t sum = 0;
+  sum = pwm_value;
+  sum += pwm_value;
+  return sum / 2;
+
+
 }

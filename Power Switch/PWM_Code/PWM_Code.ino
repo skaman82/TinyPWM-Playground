@@ -24,8 +24,7 @@ void loop() {
 
   if (digitalRead(SENS_PIN) == LOW) {
 
-
-    if (pwm_value > 1500) {
+    if (pwm_value > 1700) {
       digitalWrite(GATE_PIN, LOW);
     }
     else {
@@ -35,11 +34,11 @@ void loop() {
 
   if (digitalRead(SENS_PIN) != LOW) {
 
-    if (pwm_value > 1500) {
-      digitalWrite(GATE_PIN, HIGH);
+    if (pwm_value > 1300) {
+      digitalWrite(GATE_PIN, LOW);
     }
     else {
-      digitalWrite(GATE_PIN, LOW);
+      digitalWrite(GATE_PIN, HIGH);
     }
   }
 
