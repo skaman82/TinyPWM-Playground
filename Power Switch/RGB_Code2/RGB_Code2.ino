@@ -144,7 +144,7 @@ void loop() {
       buttontimer++;
     }
 
-    if (buttontimer == 1000) {
+    if (buttontimer == 100) {
       if (color_setting != old_color_setting) {
         //save setting if it is changed
         EEPROM.write(colorADDR, color_setting);

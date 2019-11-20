@@ -97,7 +97,7 @@ void loop() {
   }
 
   else if (configFlag == 3) { // do constant on
-    analogWrite(GATE, 155);
+    analogWrite(GATE, 150);
 
   }
 
