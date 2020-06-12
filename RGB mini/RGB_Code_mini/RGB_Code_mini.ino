@@ -13,7 +13,8 @@
 #define colorADDR       2   // EEPROM Adress for color setting
 #define mapADDR         3   // EEPROM Adress for map setting
 #define NUMPIXELS       16
-#define Button          3   // 5nano | 0at85 | 3 LEDmini
+
+#define Button          0   // 5nano | 0at85 | 3 LEDmini | 0new
 #define WSLED_PIN       4   // 3nano | 4at85 & mini
 #define PWM_PIN         2   // 2all (only mini)
 
