@@ -1,0 +1,17 @@
+Partlist
+
+Exported from strobeAT10.brd at 30.09.21 13:45
+
+EAGLE Version 9.3.1 Copyright (c) 1988-2019 Autodesk, Inc.
+
+Assembly variant: 
+
+Part     Value                Package               Library               Position (mil)        Orientation
+
+C1       100nf                C0603                 rcl                   (-1145 3610)          R0
+LED      X42180               Z-POWER-LED-DOME-TYPE led                   (-950 3850)           R0
+Q2       BC848                SOT23-3               SparkFun-DiscreteSemi (-680 3750)           R0
+R1       1R0 1/4w             R0805                 resistor              (-1210 3705)          R0
+R2       100R                 R0603                 resistor              (-800 3600)           R180
+R3       100R 1/4w            R0805                 resistor              (-1195 3935)          R90
+U2       ATTINY10-TS8R        SOT95P280X145-6N      ATTINY10-TS8R         (-955 3555)           R90

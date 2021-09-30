@@ -1,0 +1,18 @@
+Partlist
+
+Exported from switch_AT10.brd at 30.09.21 13:47
+
+EAGLE Version 9.3.1 Copyright (c) 1988-2019 Autodesk, Inc.
+
+Assembly variant: 
+
+Part      Value                   Package                 Library               Position (mil)        Orientation
+
+C1        100nf                   C0603                   rcl                   (420 3720)            R0
+D2        green                   LED-0603                SparkFun-LED          (420 3555)            R180
+IRLML6402 IRLML6402               SUPER-SOT3              transistor-power      (435 3855)            R270
+NPN       BC848                   SOT23-3                 SparkFun-DiscreteSemi (595 3755)            R0
+R1        10k                     R0603                   rcl                   (255 3895)            R180
+R2        100                     R0603                   rcl                   (420 3635)            R180
+R3        10k                     R0603                   rcl                   (595 3635)            R180
+U2        ATTINY10-TS8R           SOT95P280X145-6N        ATTINY10-TS8R         (245 3720)            R0
